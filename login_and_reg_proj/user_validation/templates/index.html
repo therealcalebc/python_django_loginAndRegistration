@@ -12,34 +12,79 @@
 		<link rel="stylesheet" href="{% static 'css/style.css' %}">
 	</head>
 	<body>
-		<main class="container-fluid">
-			<h1 class="mb-2 pb-2 h4 text-center"><a href="/shows" class="text-reset text-decoration-none">{{ title }}</a></h1>
-			<h2 class="h1 mb-3 text-center">All Shows</h2>
-			<div class="w-75 mx-auto mb-4">
-				<table class="mb-4 table table-sm table-bordered table-striped table-hover">
-					<caption hidden>List of shows</caption>
-					<thead class="table-light">
-						<tr>
-							<th class="col" scope="col">ID</th>
-							<th class="col-4" scope="col">Title</th>
-							<th class="col" scope="col">Network</th>
-							<th class="col" scope="col">Release Date</th>
-							<th class="col-3" scope="col">Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for show in shows %}
-						<tr>
-							<th class="col" scope="row">{{ show.id }}</th>
-							<td class="col-4">{{ show.title | title }}</td>
-							<td class="col">{{ show.network }}</td>
-							<td class="col">{{ show.release_date }}</td>
-							<td class="col-3"><a class="small mx-1 px-1 link-primary" href="/shows/{{ show.id }}">View</a> | <a class="small mx-1 px-1 link-info" href="/shows/{{ show.id }}/edit">Edit</a> | <a class="small mx-1 px-1 link-danger" href="/shows/{{ show.id }}/destroy">Delete</a></td>
-						</tr>
+		<header class="container-fluid p-3 bg-info">
+				<h1 class="mb-4 display-6 text-center">Hello, please Login or Register</h1>
+		</header>
+		<main class="container">
+			<div class="row">
+				<div class="col m-4 p-4">
+					<h2 class="mb-3 text-center">Registration</h2>
+					{% if messages %}
+					<ul class="list-unstyled">
+						{% for message in messages %}
+						{% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+						<li class="mb-1 py-0 fs-6 alert {% if message.tags %}{{message.tags}}{% else %}alert-warning{% endif %}">{{ message }}</li>
+						{% endif %}
 						{% endfor %}
-					</tbody>
-				</table>
-				<a class="btn btn-link" href="/shows/new">Add a New Show</a>
+					</ul>
+					{% endif %}
+					<form action="register" method="POST">
+						{% csrf_token %}
+						<div class="row mb-3">
+							<label for="firstNameInput" class="col form-label">First Name:</label>
+							<input type="text" class="col form-control form-control-sm" name="first_name" id="firstNameInput" placeholder="Jane" {% if repopnew.first_name %}value="{{ repopnew.first_name }}"{% endif %}>
+						</div>
+						<div class="row mb-3">
+							<label for="lastNameInput" class="col form-label">Last Name:</label>
+							<input type="text" class="col form-control form-control-sm" name="last_name" id="lastNameInput" placeholder="Doe" {% if repopnew.last_name %}value="{{ repopnew.last_name }}"{% endif %}>
+						</div>
+						<div class="row mb-3">
+							<label for="birthDateInput" class="col form-label">Birth Date:</label>
+							<input type="date" class="col form-control form-control-sm" name="birth_date" id="birthDateInput" {% if repopnew.birth_date %}value="{{ repopnew.birth_date }}"{% endif %} min="1900-01-01" max="{% now "Y-m-d" %}"/>
+						</div>
+						<div class="row mb-3">
+							<label for="emailAddrInput" class="col form-label">Email Address:</label>
+							<input type="email" class="col form-control form-control-sm" name="email_addr" id="emailAddrInput" placeholder="jane@doe.com" {% if repopnew.email_addr %}value="{{ repopnew.email_addr }}"{% endif %}>
+						</div>
+						<div class="row mb-3">
+							<label for="passwordInput" class="col form-label">Password:</label>
+							<input type="password" class="col form-control form-control-sm" name="password" id="passwordInput" placeholder="***********" {% if repopnew.password %}value="{{ repopnew.password }}"{% endif %}>
+						</div>
+						<div class="row mb-3">
+							<label for="pwConfirmInput" class="col form-label">Confirm PW:</label>
+							<input type="password" class="col form-control form-control-sm" name="pw_confirm" id="pwConfirmInput" placeholder="***********" {% if repopnew.pw_confirm %}value="{{ repopnew.pw_confirm }}"{% endif %}>
+						</div>
+						<div class="row button-group justify-content-center">
+							<button type="submit" class="col-4 mx-3 px-3 py-2 btn btn-primary">Register</button>
+						</div>
+					</form>
+				</div>
+				<div class="col m-4 p-4">
+					<h2 class="mb-3 text-center">Login</h2>
+					{% if messages %}
+					<ul class="list-unstyled">
+						{% for message in messages %}
+						{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+						<li class="mb-1 py-0 fs-6 alert {% if message.tags %}{{message.tags}}{% else %}alert-danger{% endif %}">{{ message }}</li>
+						{% endif %}
+						{% endfor %}
+					</ul>
+					{% endif %}
+					<form action="login" method="POST">
+						{% csrf_token %}
+						<div class="row mb-3">
+							<label for="emailAddrInput" class="col form-label">Email Address:</label>
+							<input type="email" class="col form-control form-control-sm" name="email_addr" id="emailAddrInput" placeholder="jane@doe.com" {% if repopnew.email_addr %}value="{{ repopnew.email_addr }}"{% endif %}>
+						</div>
+						<div class="row mb-3">
+							<label for="passwordInput" class="col form-label">Password:</label>
+							<input type="password" class="col form-control form-control-sm" name="password" id="passwordInput" placeholder="***********" {% if repopnew.password %}value="{{ repopnew.password }}"{% endif %}>
+						</div>
+						<div class="row button-group justify-content-center">
+							<button type="submit" class="col-4 mx-3 px-3 py-2 btn btn-primary">Log In</button>
+						</div>
+					</form>
+				</div>
 			</div>
 		</main>
 		<!-- latest bootstrap js bundle -->

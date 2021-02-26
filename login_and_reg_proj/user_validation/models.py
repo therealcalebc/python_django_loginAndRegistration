@@ -4,8 +4,8 @@ import re
 
 
 class UserManager(models.Manager):
-	login_timeout = timedelta(minutes=1)
-	age_cutoff = timedelta(years=13)
+	login_timeout = timedelta(days=2)
+	age_cutoff = timedelta(days=4748) #13 years
 	def basic_validator(self, postData):
 		errors = {}
 		if 'email_addr' not in postData:
@@ -22,7 +22,7 @@ class UserManager(models.Manager):
 		return errors
 
 	def registration_validator(self, postData):
-		errors = self.basic_validator(postData=postData)
+		errors = {}
 		if 'first_name' not in postData:
 			errors['first_name_null'] = "First name is required"
 		else:
@@ -37,15 +37,16 @@ class UserManager(models.Manager):
 				errors['last_name_len'] = "Last name must be at least 2 characters"
 			if not postData['last_name'].isalpha():
 				errors['last_name_val'] = "Last name must only contain letters"
-		if 'birth_date' not in postData:
+		if ('birth_date' not in postData) or (postData['birth_date'] == ''):
 			errors['birth_date_null'] = "Birth date is required"
 		else:
-			bd = datetime.strptime(postData['birth_date', '%Y-%m-%d']).date()
+			bd = datetime.strptime(postData['birth_date'], '%Y-%m-%d').date()
 			today = date.today()
 			if bd > today:
 				errors['birth_date_future'] = "Birth date must be in the past"
 			elif bd > today - self.age_cutoff:
 				errors['birth_date_child'] = "You must be at least 13 years old to register"
+		errors.update(self.basic_validator(postData=postData))
 		if 'email_addr' in postData and len(User.objects.filter(email_addr__iexact=postData['email_addr'])) > 0:
 			errors['email_addr_prev'] = "Email address was previously registered"
 		if 'pw_confirm' not in postData:
@@ -61,6 +62,7 @@ class UserManager(models.Manager):
 class User(models.Model):
 	first_name = models.CharField(max_length=25)
 	last_name = models.CharField(max_length=50)
+	birth_date = models.DateField()
 	email_addr = models.CharField(max_length=100)
 	pw_hash = models.CharField(max_length=100)
 	created_at = models.DateTimeField(auto_now_add=True)
